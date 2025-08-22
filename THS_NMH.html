@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>La Bàn Thần Số Học | Nguyễn Mạnh Hùng</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Calm Harmony -->
+    <!-- Application Structure Plan: A tabbed, single-page application with four main sections: 1) Overview Dashboard for core numbers, 2) Interactive Birth Chart with a visual grid and radar chart, 3) Actionable Development Path for life lessons, and 4) Future Forecast for the personal year. This structure breaks down the dense report into interactive, thematic modules, allowing the user to explore their data non-linearly and at their own pace, which is more engaging and user-friendly than a simple long-form text document. -->
+    <!-- Visualization & Content Choices: Core Numbers -> Goal: Inform -> Presentation: Clickable Cards -> Interaction: JS show/hide details -> Justification: Quick summary, clean UI. Birth Chart -> Goal: Organize/Visualize -> Presentation: HTML Grid + Chart.js Radar Chart -> Interaction: Hover/click for info -> Justification: Radar chart provides a unique, powerful visualization of energetic balance. Development Path -> Goal: Guide -> Presentation: Accordion -> Interaction: Toggle content -> Justification: Organizes actionable advice cleanly. Future Path -> Goal: Forecast -> Presentation: Info Card + Progress Bar -> Interaction: Static info -> Justification: Clear, focused presentation for time-sensitive info. CONFIRMING NO SVG/Mermaid. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Be Vietnam Pro', sans-serif;
+            background-color: #FDFBF8;
+            color: #4A4A4A;
+        }
+        .nav-link {
+            transition: all 0.3s ease;
+            border-bottom: 2px solid transparent;
+        }
+        .nav-link.active {
+            border-bottom-color: #D97706;
+            color: #D97706;
+        }
+        .card {
+            background-color: #FFFFFF;
+            border: 1px solid #F3F4F6;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.05);
+            transition: all 0.3s ease;
+        }
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.07), 0 4px 6px -4px rgb(0 0 0 / 0.07);
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 400px;
+            max-height: 50vh;
+        }
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease-in-out;
+        }
+        .birth-chart-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.75rem;
+            width: 100%;
+            max-width: 300px;
+            margin: auto;
+        }
+        .birth-chart-cell {
+            aspect-ratio: 1 / 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 1.5rem;
+            cursor: default;
+        }
+        .number-present {
+            background-color: #FEF3C7;
+            color: #92400E;
+        }
+        .number-missing {
+            background-color: #F3F4F6;
+            color: #9CA3AF;
+        }
+        .arrow-highlight {
+            border: 2px solid #F59E0B;
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <div class="container mx-auto px-4 py-8 max-w-6xl">
+        <header class="text-center mb-8">
+            <h1 class="text-3xl md:text-4xl font-bold text-amber-700">La Bàn Thần Số Học</h1>
+            <p class="text-lg text-stone-600 mt-2">Dành cho Nguyễn Mạnh Hùng - 24/12/1997</p>
+        </header>
+
+        <nav class="flex justify-center border-b border-stone-200 mb-8">
+            <div class="flex space-x-4 md:space-x-8">
+                <a href="#tong-quan" class="nav-link active py-4 px-2 text-stone-600 hover:text-amber-600 font-medium" data-target="tong-quan">Tổng Quan</a>
+                <a href="#bieu-do" class="nav-link py-4 px-2 text-stone-600 hover:text-amber-600 font-medium" data-target="bieu-do">Biểu Đồ Ngày Sinh</a>
+                <a href="#lo-trinh" class="nav-link py-4 px-2 text-stone-600 hover:text-amber-600 font-medium" data-target="lo-trinh">Lộ Trình Phát Triển</a>
+                <a href="#tuong-lai" class="nav-link py-4 px-2 text-stone-600 hover:text-amber-600 font-medium" data-target="tuong-lai">Vận Trình Tương Lai</a>
+            </div>
+        </nav>
+
+        <main>
+            <section id="tong-quan" class="content-section">
+                <div class="text-center mb-8">
+                    <h2 class="text-2xl font-bold text-amber-800">Bốn Con Số Cốt Lõi</h2>
+                    <p class="mt-2 text-stone-600 max-w-3xl mx-auto">Đây là bốn trụ cột chính định hình nên bản sắc, động lực và mục đích sống của anh. Chúng tiết lộ con đường anh đi, sứ mệnh cần hoàn thành, khát khao sâu thẳm và cách anh phản ứng tự nhiên với cuộc sống.</p>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <div class="card p-6 text-center" data-modal-target="modal-8">
+                        <p class="text-sm text-stone-500">Con Số Chủ Đạo</p>
+                        <p class="text-6xl font-bold text-amber-600 my-3">8</p>
+                        <p class="font-semibold text-stone-700">Nhà Lãnh Đạo Thực Thi</p>
+                    </div>
+                    <div class="card p-6 text-center" data-modal-target="modal-1">
+                        <p class="text-sm text-stone-500">Chỉ Số Sứ Mệnh</p>
+                        <p class="text-6xl font-bold text-amber-600 my-3">1</p>
+                        <p class="font-semibold text-stone-700">Người Tiên Phong</p>
+                    </div>
+                    <div class="card p-6 text-center" data-modal-target="modal-3">
+                        <p class="text-sm text-stone-500">Chỉ Số Linh Hồn</p>
+                        <p class="text-6xl font-bold text-amber-600 my-3">3</p>
+                        <p class="font-semibold text-stone-700">Khát Vọng Sáng Tạo</p>
+                    </div>
+                    <div class="card p-6 text-center" data-modal-target="modal-9">
+                        <p class="text-sm text-stone-500">Chỉ Số Thái Độ</p>
+                        <p class="text-6xl font-bold text-amber-600 my-3">9</p>
+                        <p class="font-semibold text-stone-700">Tấm Lòng Vị Tha</p>
+                    </div>
+                </div>
+                 <div class="card mt-8 p-6">
+                    <h3 class="font-bold text-xl text-amber-800 mb-3 text-center">Sự Giao Thoa Năng Lượng</h3>
+                    <p class="text-stone-600 leading-relaxed">Sự kết hợp giữa Con Số Chủ Đạo 8 và Sứ Mệnh 1 tạo nên một nhà lãnh đạo mạnh mẽ, có khả năng xây dựng đế chế. Tuy nhiên, nếu chỉ có hai con số này, anh có thể trở thành một người độc đoán. May mắn thay, Linh hồn số 3 mang đến khát khao sáng tạo và kết nối, còn Thái độ số 9 thôi thúc anh hành động vì lợi ích cộng đồng. Sự kết hợp này tạo nên hình mẫu "Nhà Lãnh Đạo-Tầm Nhìn Nhân Ái". Động lực thành công của anh được định hướng bởi lòng vị tha và nhu cầu thể hiện sáng tạo, giúp dung hòa tham vọng cá nhân với mong muốn về một cuộc sống ý nghĩa, trọn vẹn.</p>
+                </div>
+            </section>
+
+            <section id="bieu-do" class="content-section hidden">
+                 <div class="text-center mb-8">
+                    <h2 class="text-2xl font-bold text-amber-800">Biểu Đồ Ngày Sinh & Năng Lượng Bẩm Sinh</h2>
+                    <p class="mt-2 text-stone-600 max-w-3xl mx-auto">Biểu đồ ngày sinh tiết lộ những tài năng, điểm mạnh và cả những lĩnh vực anh cần nỗ lực rèn luyện. Biểu đồ năng lượng trực quan hóa sự phân bổ các con số, cho thấy sự cân bằng trong con người anh.</p>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                    <div class="card p-6">
+                        <h3 class="font-bold text-xl text-amber-800 mb-4 text-center">Biểu đồ ngày sinh: 24/12/1997</h3>
+                        <div class="birth-chart-grid">
+                            <div class="birth-chart-cell number-missing">3</div>
+                            <div class="birth-chart-cell number-missing">6</div>
+                            <div class="birth-chart-cell number-present">9 9</div>
+                            <div class="birth-chart-cell number-present">2 2</div>
+                            <div class="birth-chart-cell number-missing">5</div>
+                            <div class="birth-chart-cell number-missing">8</div>
+                            <div class="birth-chart-cell number-present arrow-highlight">1 1</div>
+                            <div class="birth-chart-cell number-present arrow-highlight">4</div>
+                            <div class="birth-chart-cell number-present arrow-highlight">7</div>
+                        </div>
+                        <div class="mt-4 text-center">
+                            <h4 class="font-semibold text-stone-700">Mũi Tên Sức Mạnh 1-4-7: Nền Tảng Thực Tế</h4>
+                            <p class="text-sm text-stone-600 mt-1">Anh là người cực kỳ thực tế, tháo vát và có khả năng biến ý tưởng thành hiện thực. Đây là "siêu năng lực" bẩm sinh giúp anh đặt nền móng vật chất vững chắc cho mục tiêu "an cư lạc nghiệp".</p>
+                        </div>
+                    </div>
+                    <div class="card p-6">
+                        <h3 class="font-bold text-xl text-amber-800 mb-4 text-center">Biểu Đồ Năng Lượng</h3>
+                        <div class="chart-container">
+                            <canvas id="energyChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="lo-trinh" class="content-section hidden">
+                <div class="text-center mb-8">
+                    <h2 class="text-2xl font-bold text-amber-800">Lộ Trình Hoàn Thiện Bản Thân</h2>
+                    <p class="mt-2 text-stone-600 max-w-3xl mx-auto">Những ô trống trong biểu đồ ngày sinh không phải là "khiếm khuyết", mà là "chương trình học" được thiết kế riêng cho anh. Đây là những lĩnh vực anh cần chủ động trau dồi để đạt được sự phát triển toàn diện, hướng tới mục tiêu "An Cư Lạc Nghiệp".</p>
+                </div>
+                <div class="space-y-4">
+                    <div class="accordion-item card">
+                        <button class="accordion-header w-full flex justify-between items-center p-5 text-left font-semibold text-amber-800">
+                            <span>Bài học về Sáng tạo & Niềm vui (Thiếu số 3)</span>
+                            <span class="transform transition-transform duration-300">▼</span>
+                        </button>
+                        <div class="accordion-content px-5 pb-5">
+                            <p class="text-stone-600 leading-relaxed">Mặc dù Linh hồn anh khao khát sáng tạo, anh không được sinh ra với năng khiếu bẩm sinh dễ dàng trong lĩnh vực này. Anh cần chủ động tìm kiếm và nuôi dưỡng niềm vui, sự hài hước và các sở thích sáng tạo. <br><b>Gợi ý:</b> Tham gia khóa học nói trước công chúng, học một nhạc cụ, viết lách, hoặc dành thời gian cho các hoạt động mang lại tiếng cười.</p>
+                        </div>
+                    </div>
+                    <div class="accordion-item card">
+                        <button class="accordion-header w-full flex justify-between items-center p-5 text-left font-semibold text-amber-800">
+                            <span>Bài học về Linh hoạt & Cảm xúc (Thiếu số 5)</span>
+                            <span class="transform transition-transform duration-300">▼</span>
+                        </button>
+                        <div class="accordion-content px-5 pb-5">
+                            <p class="text-stone-600 leading-relaxed">Ô trống này chỉ ra xu hướng cứng nhắc và ngại thay đổi. Bài học ở đây là rèn luyện sự linh hoạt, dám bước ra khỏi vùng an toàn và học cách thể hiện cảm xúc một cách tự do để không bị mắc kẹt. <br><b>Gợi ý:</b> Lên kế hoạch cho những chuyến đi ngẫu hứng, nói "có" với những trải nghiệm mới, tập thể hiện cởi mở cảm xúc của mình với người thân.</p>
+                        </div>
+                    </div>
+                    <div class="accordion-item card">
+                        <button class="accordion-header w-full flex justify-between items-center p-5 text-left font-semibold text-amber-800">
+                            <span>Bài học về Gia đình & Chăm sóc (Thiếu số 6)</span>
+                            <span class="transform transition-transform duration-300">▼</span>
+                        </button>
+                        <div class="accordion-content px-5 pb-5">
+                            <p class="text-stone-600 leading-relaxed">Đây là thách thức trực tiếp và quan trọng nhất đối với mục tiêu "an cư". Anh cần học một cách có ý thức nghệ thuật tạo dựng một không gian gia đình ấm cúng, coi trách nhiệm gia đình là một nguồn vui sáng tạo. <br><b>Gợi ý:</b> Chủ động tham gia trang trí nhà cửa, học nấu ăn, thiết lập thời gian chất lượng dành riêng cho gia đình.</p>
+                        </div>
+                    </div>
+                    <div class="accordion-item card">
+                        <button class="accordion-header w-full flex justify-between items-center p-5 text-left font-semibold text-amber-800">
+                            <span>Bài học về Độc lập & Tài chính (Thiếu số 8)</span>
+                            <span class="transform transition-transform duration-300">▼</span>
+                        </button>
+                        <div class="accordion-content px-5 pb-5">
+                            <p class="text-stone-600 leading-relaxed">Với Con Số Chủ Đạo 8, việc thiếu số 8 trong biểu đồ có nghĩa là anh đến đây để học về sự độc lập và trí tuệ tài chính thông qua thử nghiệm và sai lầm. Anh phải chủ động học hỏi và xây dựng sự tự tin từng bước. <br><b>Gợi ý:</b> Lập ngân sách cá nhân, đọc sách về kinh doanh và lãnh đạo, đảm nhận các dự án độc lập để rèn luyện khả năng tự chủ.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="tuong-lai" class="content-section hidden">
+                <div class="text-center mb-8">
+                    <h2 class="text-2xl font-bold text-amber-800">Vận Trình Năm 2025</h2>
+                    <p class="mt-2 text-stone-600 max-w-3xl mx-auto">Năm 2025 mang đến một nguồn năng lượng đặc biệt, là giai đoạn then chốt để anh hoàn thiện một chu kỳ cũ và chuẩn bị cho một khởi đầu mới rực rỡ hơn.</p>
+                </div>
+                <div class="card max-w-3xl mx-auto p-8">
+                    <div class="text-center">
+                        <p class="text-stone-500">Năm Cá Nhân</p>
+                        <p class="text-7xl font-bold text-amber-600 my-4">9</p>
+                        <h3 class="text-2xl font-bold text-stone-800">Năm Của Sự Hoàn Thiện & Giải Phóng</h3>
+                    </div>
+                    <div class="mt-6">
+                        <p class="text-stone-600 text-center leading-relaxed">Đây là năm cuối cùng trong chu kỳ 9 năm của anh. Là thời điểm để thu hoạch những gì đã gieo, đồng thời buông bỏ những gì không còn phù hợp. Đây không phải là năm để bắt đầu những dự án lớn, mà là để hoàn thành những gì còn dang dở, dọn dẹp không gian sống và tinh thần, và chữa lành những tổn thương cũ.</p>
+                        <div class="w-full bg-stone-200 rounded-full h-2.5 mt-6">
+                            <div class="bg-amber-600 h-2.5 rounded-full" style="width: 100%"></div>
+                        </div>
+                        <p class="text-center text-sm text-stone-500 mt-2">Chu kỳ 9 năm đang hoàn tất</p>
+                    </div>
+                    <div class="mt-8 text-center bg-amber-50 p-4 rounded-lg">
+                        <h4 class="font-semibold text-amber-800">Hướng tới 2026 - Năm Cá Nhân số 1</h4>
+                        <p class="text-amber-700 mt-1">Bằng cách dọn dẹp và giải phóng gánh nặng trong năm 2025, anh sẽ tạo ra một mảnh đất màu mỡ để gieo những hạt giống đầu tiên cho giấc mơ "an cư lạc nghiệp" khi chu kỳ năng lượng mới bắt đầu vào năm 2026.</p>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <div id="modal-backdrop" class="fixed inset-0 bg-black bg-opacity-50 z-40 hidden"></div>
+    <div id="modal-container" class="fixed inset-0 z-50 flex items-center justify-center p-4 hidden">
+        <div id="modal-content" class="bg-white rounded-lg shadow-xl w-full max-w-2xl max-h-[80vh] overflow-y-auto p-6 md:p-8 relative">
+            <button id="modal-close" class="absolute top-4 right-4 text-stone-500 hover:text-stone-800">&times;</button>
+            <div id="modal-body"></div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const navLinks = document.querySelectorAll('.nav-link');
+            const contentSections = document.querySelectorAll('.content-section');
+            const accordionHeaders = document.querySelectorAll('.accordion-header');
+            const coreCards = document.querySelectorAll('[data-modal-target]');
+            const modalBackdrop = document.getElementById('modal-backdrop');
+            const modalContainer = document.getElementById('modal-container');
+            const modalClose = document.getElementById('modal-close');
+            const modalBody = document.getElementById('modal-body');
+
+            const modalData = {
+                'modal-8': {
+                    title: 'Con Số Chủ Đạo 8: Nhà Lãnh Đạo Thực Thi',
+                    content: `
+                        <p class="mb-4">Con Số Chủ Đạo 8 là con đường của quyền lực, sự độc lập, tự tin và thành công về mặt vật chất. Những người mang năng lượng này được sinh ra với khả năng lãnh đạo bẩm sinh, tư duy chiến lược và một động lực mạnh mẽ để đạt được các mục tiêu lớn. Con đường đời của họ xoay quanh việc học cách làm chủ thế giới vật chất, xây dựng sự ổn định tài chính và đảm nhận các vị trí có tầm ảnh hưởng.</p>
+                        <p class="mb-2"><strong>Điểm mạnh:</strong> Năng lực tổ chức, điều hành, tự tin, quyết đoán, kiên định, và có tầm nhìn xa. Anh có khả năng xây dựng sự nghiệp vững chắc và tạo ra thịnh vượng.</p>
+                        <p><strong>Thách thức:</strong> Nguy cơ bị ám ảnh bởi thành công vật chất, làm việc quá sức, trở nên cứng nhắc, độc đoán. Bài học lớn nhất là cân bằng giữa tham vọng sự nghiệp và cuộc sống cá nhân, giữa quyền lực và lòng trắc ẩn.</p>
+                    `
+                },
+                'modal-1': {
+                    title: 'Chỉ Số Sứ Mệnh 1: Người Tiên Phong',
+                    content: `
+                        <p class="mb-4">Sứ mệnh số 1 là tiếng gọi của người tiên phong, người lãnh đạo và người khởi xướng. Nhiệm vụ của anh trong cuộc đời này là phát triển sự độc lập, tin vào khả năng của bản thân, dám nghĩ dám làm và dẫn dắt người khác bằng sự can đảm và độc đáo của mình.</p>
+                        <p>Sự kết hợp giữa Sứ Mệnh 1 và Con Số Chủ Đạo 8 tạo ra một nguồn năng lượng vô cùng mạnh mẽ. Anh không chỉ được định hướng để quản lý những hệ thống có sẵn (số 8), mà còn để tạo ra những con đường, dự án và doanh nghiệp hoàn toàn mới (số 1).</p>
+                    `
+                },
+                'modal-3': {
+                    title: 'Chỉ Số Linh Hồn 3: Khát Vọng Sáng Tạo',
+                    content: `
+                        <p class="mb-4">Linh hồn của anh khao khát được thể hiện bản thân thông qua sự sáng tạo, giao tiếp và lan tỏa niềm vui. Anh sẽ cảm thấy hạnh phúc và trọn vẹn nhất khi có cơ hội thể hiện quan điểm, truyền cảm hứng cho người khác bằng sự hài hước, dí dỏm và khả năng hoạt ngôn của mình.</p>
+                        <p>Năng lượng của Linh hồn số 3 chính là yếu tố cân bằng tối quan trọng cho sự nghiêm túc, thực tế của số 8 và số 1. Nó là nguồn gốc của sức hút cá nhân và khả năng kết nối cảm xúc. Bỏ qua khát vọng này có thể dẫn đến cảm giác trống rỗng dù thành công về vật chất.</p>
+                    `
+                },
+                'modal-9': {
+                    title: 'Chỉ Số Thái Độ 9: Tấm Lòng Vị Tha',
+                    content: `
+                        <p class="mb-4">Chỉ Số Thái Độ 9 cho thấy anh có xu hướng tiếp cận cuộc sống với một tinh thần nhân đạo, trách nhiệm và lý tưởng cao cả. Anh có một cái nhìn bao quát, luôn quan tâm đến lợi ích chung và có lòng trắc ẩn sâu sắc đối với cộng đồng.</p>
+                        <p>Năng lượng này cộng hưởng mạnh mẽ với mong muốn "an cư". Ý thức trách nhiệm và sự quan tâm đến người khác chính là những phẩm chất cần thiết để xây dựng một mái ấm gia đình hạnh phúc và trở thành một thành viên tích cực trong cộng đồng.</p>
+                    `
+                }
+            };
+
+            const showSection = (targetId) => {
+                contentSections.forEach(section => {
+                    section.classList.toggle('hidden', section.id !== targetId);
+                });
+                navLinks.forEach(link => {
+                    link.classList.toggle('active', link.dataset.target === targetId);
+                });
+            };
+
+            navLinks.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const targetId = e.currentTarget.dataset.target;
+                    showSection(targetId);
+                    window.history.pushState({}, '', `#${targetId}`);
+                });
+            });
+
+            const currentHash = window.location.hash.substring(1);
+            if (currentHash) {
+                showSection(currentHash);
+            } else {
+                showSection('tong-quan');
+            }
+
+            accordionHeaders.forEach(header => {
+                header.addEventListener('click', () => {
+                    const content = header.nextElementSibling;
+                    const icon = header.querySelector('span:last-child');
+                    
+                    if (content.style.maxHeight) {
+                        content.style.maxHeight = null;
+                        icon.style.transform = 'rotate(0deg)';
+                    } else {
+                        document.querySelectorAll('.accordion-content').forEach(c => {
+                            c.style.maxHeight = null;
+                            c.previousElementSibling.querySelector('span:last-child').style.transform = 'rotate(0deg)';
+                        });
+                        content.style.maxHeight = content.scrollHeight + "px";
+                        icon.style.transform = 'rotate(180deg)';
+                    }
+                });
+            });
+            
+            const openModal = (targetId) => {
+                const data = modalData[targetId];
+                if (!data) return;
+
+                modalBody.innerHTML = `<h2 class="text-2xl font-bold text-amber-800 mb-4">${data.title}</h2>${data.content}`;
+                modalBackdrop.classList.remove('hidden');
+                modalContainer.classList.remove('hidden');
+            };
+
+            const closeModal = () => {
+                modalBackdrop.classList.add('hidden');
+                modalContainer.classList.add('hidden');
+            };
+
+            coreCards.forEach(card => {
+                card.addEventListener('click', () => {
+                    openModal(card.dataset.modalTarget);
+                });
+            });
+
+            modalClose.addEventListener('click', closeModal);
+            modalBackdrop.addEventListener('click', closeModal);
+            
+            const ctx = document.getElementById('energyChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'radar',
+                data: {
+                    labels: ['Số 1', 'Số 2', 'Số 3', 'Số 4', 'Số 5', 'Số 6', 'Số 7', 'Số 8', 'Số 9'],
+                    datasets: [{
+                        label: 'Số lần xuất hiện',
+                        data: [2, 2, 0, 1, 0, 0, 1, 0, 2],
+                        backgroundColor: 'rgba(217, 119, 6, 0.2)',
+                        borderColor: 'rgba(217, 119, 6, 1)',
+                        borderWidth: 2,
+                        pointBackgroundColor: 'rgba(217, 119, 6, 1)',
+                        pointBorderColor: '#fff',
+                        pointHoverBackgroundColor: '#fff',
+                        pointHoverBorderColor: 'rgba(217, 119, 6, 1)'
+                    }]
+                },
+                options: {
+                    maintainAspectRatio: false,
+                    scales: {
+                        r: {
+                            angleLines: {
+                                color: '#E5E7EB'
+                            },
+                            grid: {
+                                color: '#F3F4F6'
+                            },
+                            pointLabels: {
+                                font: {
+                                    size: 12,
+                                    weight: '500'
+                                },
+                                color: '#4B5563'
+                            },
+                            ticks: {
+                                backdropColor: 'transparent',
+                                stepSize: 1
+                            },
+                            suggestedMin: 0,
+                            suggestedMax: 3
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>
